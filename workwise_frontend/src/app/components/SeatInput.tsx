@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { SeatMatrix } from "./SeatMatrix";
+import { HTTP_BACKEND_URL } from "../constant";
 
 function SeatInput() {
   const [seatCount, setSeatCount] = useState<number>(0);
@@ -11,7 +12,7 @@ function SeatInput() {
     try {
       setisloading(true);
       const res = await axios.post(
-        "http://localhost:3000/api/v1/seat/booking",
+        `${HTTP_BACKEND_URL}/api/v1/seat/booking`,
         {
           seatCount,
         },

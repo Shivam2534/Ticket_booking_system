@@ -1,5 +1,16 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma"; // assuming this is correctly set up
+import { PrismaClientRustPanicError } from "@prisma/client/runtime/library";
+
+interface SeatType {
+  id: number;
+  row_number: number;
+  seat_number: number;
+  is_booked: boolean;
+  booked_by: string | number | null;
+  coach_id: number;
+  bookingId: string | number | null;
+}
 
 const initialCoachMatrix = async (req: Request) => {
   console.log("request reached into initialCoachMatrix controller");
@@ -11,9 +22,9 @@ const initialCoachMatrix = async (req: Request) => {
     });
 
     // Build matrix: 2D array -> rows of seats
-    const matrix: any[][] = [];
+    const matrix: SeatType[][] = [];
     let currentRow = 1;
-    let rowSeats: any[] = [];
+    let rowSeats: SeatType[] = [];
 
     for (const seat of seats) {
       if (seat.row_number !== currentRow) {
@@ -30,20 +41,13 @@ const initialCoachMatrix = async (req: Request) => {
     }
 
     return matrix;
-    // } else {
-    //   res.status(200).json({
-    //     success: true,
-    //     data: matrix,
-    //   });
-    //   return;
-    // }
   } catch (error) {
     console.error("Error fetching seat matrix:", error);
     return error;
   }
 };
 
-function findContiguousBlock(rowSeats: any, requiredCount: any) {
+function findContiguousBlock(rowSeats: SeatType[], requiredCount: number) {
   let count = 0;
   let startIndex = 0;
   for (let i = 0; i < rowSeats.length; i++) {
@@ -88,7 +92,7 @@ const booking = async (req: Request, res: Response) => {
         rows[seat.row_number].push(seat);
       });
 
-      let allocatedSeats = [];
+      let allocatedSeats: SeatType[] = [];
 
       // 2. Try to find a contiguous block
       for (const row in rows) {
@@ -116,7 +120,7 @@ const booking = async (req: Request, res: Response) => {
         throw new Error("Not enough seats available together.");
       }
 
-      const seatIds = allocatedSeats.map((seat: any) => seat.id);
+      const seatIds = allocatedSeats.map((seat: SeatType) => seat.id);
 
       // 4. Update selected seats as booked
       await tx.seat.updateMany({
@@ -136,14 +140,22 @@ const booking = async (req: Request, res: Response) => {
       updateMatrix,
     });
     return;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Booking error:", error);
-    if (error.message.includes("Not enough seats")) {
-      res.status(400).json({ error: error.message });
-      return;
+
+    if (error instanceof Error) {
+      if (error.message.includes("Not enough seats")) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+
+      res
+        .status(500)
+        .json({ error: "Internal Server Error", details: error.message });
+    } else {
+      // Non-standard error (not instance of Error)
+      res.status(500).json({ error: "Unknown error occurred" });
     }
-    res.status(500).json({ error: "Internal server error" });
-    return;
   }
 };
 

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { HTTP_BACKEND_URL } from "../constant";
 
 const MAX_SELECTION = 7;
 
@@ -30,7 +31,7 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/seat/initialCoachMatrix", {
+      .get(`${HTTP_BACKEND_URL}/api/v1/seat/initialCoachMatrix`, {
         headers: {
           RequestedFrom: "refresh",
         },
