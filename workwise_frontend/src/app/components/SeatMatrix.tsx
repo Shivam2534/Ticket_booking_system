@@ -60,6 +60,7 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
       // Refetch seats if needed
     } catch (err) {
       alert("Booking failed.");
+      console.log("error is- ", err);
     }
   };
 
