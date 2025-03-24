@@ -66,43 +66,43 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <div>
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Train Coach Seat Selection
-      </h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Train Coach Seat Selection
+        </h2>
 
-      <div className="border-4 border-gray-800 rounded-lg p-4 bg-gray-100">
-        {/* Train Coach Body */}
-        {seats.map((rowSeats, rowIdx) => (
-          <div
-            key={rowIdx}
-            className="flex justify-center items-center mb-3 gap-2"
-          >
-            {/* Left Side Seats (3 seats) */}
-            <div className="flex gap-2">
-              {rowSeats.map((seat) => {
-                let seatColor = "";
-                if (seat.is_booked) {
-                  seatColor = "bg-red-500";
-                } else if (selectedSeats.includes(seat.id)) {
-                  seatColor = "bg-blue-500";
-                } else {
-                  seatColor = "bg-green-500";
-                }
+        <div className="border-4 border-gray-800 rounded-lg p-4 bg-gray-100">
+          {/* Train Coach Body */}
+          {seats.map((rowSeats, rowIdx) => (
+            <div
+              key={rowIdx}
+              className="flex justify-center items-center mb-3 gap-2"
+            >
+              {/* Left Side Seats (3 seats) */}
+              <div className="flex gap-2">
+                {rowSeats?.map((seat: SeatType) => {
+                  let seatColor = "";
+                  if (seat.is_booked) {
+                    seatColor = "bg-red-500";
+                  } else if (selectedSeats.includes(seat.id)) {
+                    seatColor = "bg-blue-500";
+                  } else {
+                    seatColor = "bg-green-500";
+                  }
 
-                return (
-                  <div
-                    key={seat.id}
-                    onClick={() => toggleSeat(seat)}
-                    className={`cursor-pointer text-center rounded-md w-10 h-10 flex items-center justify-center text-white font-bold ${seatColor}`}
-                  >
-                    {seat.seat_number}
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={seat.id}
+                      onClick={() => toggleSeat(seat)}
+                      className={`cursor-pointer text-center rounded-md w-10 h-10 flex items-center justify-center text-white font-bold ${seatColor}`}
+                    >
+                      {seat.seat_number}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
       </div>
 
       <div>

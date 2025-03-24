@@ -4,9 +4,9 @@ import { useState } from "react";
 import { SeatMatrix } from "./SeatMatrix";
 
 function SeatInput() {
-  const [seatCount, setSeatCount] = useState<number>();
+  const [seatCount, setSeatCount] = useState<number>(0);
   const [isloading, setisloading] = useState(false);
-  const [updateMatrix, setupdateMatrix] = useState();
+  const [updateMatrix, setupdateMatrix] = useState([]);
   async function BookSeats() {
     try {
       setisloading(true);
