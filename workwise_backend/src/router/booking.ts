@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   bookingNewTicket,
   initialCoachMatrixHandler,
-} from "../controller/Booking";
+} from "../controller/booking_controller";
 import { middleware } from "../middleware/middleware";
 
 const bookingRouter = Router();

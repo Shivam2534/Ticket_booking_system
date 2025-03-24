@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { Prisma } from "@prisma/client";
 
 interface SeatType {
   id: number;
@@ -75,60 +76,56 @@ const bookingNewTicket = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      // 1. Retrieve seats for coach_id = 1
-      const seats = await tx.seat.findMany({
-        where: { coach_id: 1 },
-        orderBy: [{ row_number: "asc" }, { seat_number: "asc" }],
-      });
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const seats = await tx.seat.findMany({
+          where: { coach_id: 1 },
+          orderBy: [{ row_number: "asc" }, { seat_number: "asc" }],
+        });
 
-      // Group seats by row
-      const rows: { [key: number]: typeof seats } = {};
-      seats.forEach((seat) => {
-        if (!rows[seat.row_number]) {
-          rows[seat.row_number] = [];
-        }
-        rows[seat.row_number].push(seat);
-      });
+        const rows: { [key: number]: SeatType[] } = {};
+        seats.forEach((seat: SeatType) => {
+          if (!rows[seat.row_number]) rows[seat.row_number] = [];
+          rows[seat.row_number].push(seat);
+        });
 
-      let allocatedSeats: SeatType[] = [];
-
-      // 2. Try to find a contiguous block
-      for (const row in rows) {
-        rows[row].sort((a, b) => a.seat_number - b.seat_number);
-
-        const block = findContiguousBlock(rows[row], seatCount);
-        if (block) {
-          allocatedSeats = block;
-          break;
-        }
-      }
-
-      // 3. If no block, pick from available seats in a row
-      if (allocatedSeats.length === 0) {
+        let allocatedSeats: SeatType[] = [];
         for (const row in rows) {
-          const availableSeats = rows[row].filter((seat) => !seat.is_booked);
-          if (availableSeats.length >= seatCount) {
-            allocatedSeats = availableSeats.slice(0, seatCount);
+          rows[row].sort(
+            (a: SeatType, b: SeatType) => a.seat_number - b.seat_number
+          );
+          const block = findContiguousBlock(rows[row], seatCount);
+          if (block) {
+            allocatedSeats = block;
             break;
           }
         }
+
+        if (allocatedSeats.length === 0) {
+          for (const row in rows) {
+            const availableSeats = rows[row].filter(
+              (seat: SeatType) => !seat.is_booked
+            );
+            if (availableSeats.length >= seatCount) {
+              allocatedSeats = availableSeats.slice(0, seatCount);
+              break;
+            }
+          }
+        }
+
+        if (allocatedSeats.length !== seatCount) {
+          throw new Error("Not enough seats available together.");
+        }
+
+        const seatIds = allocatedSeats.map((seat) => seat.id);
+        await tx.seat.updateMany({
+          where: { id: { in: seatIds } },
+          data: { is_booked: true, booked_by: 1 },
+        });
+
+        return allocatedSeats;
       }
-
-      if (allocatedSeats.length !== seatCount) {
-        throw new Error("Not enough seats available together.");
-      }
-
-      const seatIds = allocatedSeats.map((seat: SeatType) => seat.id);
-
-      // 4. Update selected seats as booked
-      await tx.seat.updateMany({
-        where: { id: { in: seatIds } },
-        data: { is_booked: true, booked_by: 1 },
-      });
-
-      return allocatedSeats;
-    });
+    );
 
     // here we are fetching updated matrix
     const updateMatrix = await initialCoachMatrix(req);
