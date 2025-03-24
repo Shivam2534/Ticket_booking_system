@@ -3,18 +3,19 @@ import jwt from "jsonwebtoken";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
   console.log("request is at the middleware");
-  // extracting the token from header
-  const token = req.headers["authorization"] ?? "";
 
-  if (!token) {
+  const token = req.headers["authorization"]?.replace("Bearer ", "");
+
+  if (!token || token.length === 0) {
     res.status(402).json({
       message: "Unothorised access",
       success: false,
     });
+
+    return;
   }
 
-  const secrete = process.env.JWT_SECRETE || "thisiscecreatebro";
-  console.log("Secrete is->", process.env.JWT_SECRETE);
+  const secrete = process.env.JWT_SECRETE;
 
   if (!secrete) {
     res.status(403).json({

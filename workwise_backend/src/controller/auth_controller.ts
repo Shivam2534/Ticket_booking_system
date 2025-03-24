@@ -4,6 +4,8 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import { signinSchema } from "../lib/types";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const signup = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -102,7 +104,14 @@ const signin = async (req: Request, res: Response): Promise<Response> => {
     }
 
     // Generate JWT token
-    const secret = process.env.JWT_SECRET || "defaultSecret";
+    const secret = process.env.JWT_SECRET || "thisissecreatebro";
+    console.log("secrete-->", secret);
+    if (!secret) {
+      return res.status(200).json({
+        message: "secrete not found",
+        success: false,
+      });
+    }
     const token = jwt.sign({ userId: user.id }, secret, { expiresIn: "7d" });
 
     return res.status(200).json({

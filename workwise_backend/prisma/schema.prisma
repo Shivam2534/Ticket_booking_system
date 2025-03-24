@@ -16,13 +16,22 @@ model User {
   createdAt DateTime  @default(now())
 }
 
+model Coach {
+  id    Int    @id @default(autoincrement())
+  name  String
+  seats Seat[] // relation to seats
+}
+
 model Seat {
-  id         Int      @id @default(autoincrement())
-  seatNumber Int      @unique
-  rowNumber  Int
-  isBooked   Boolean  @default(false)
-  bookingId  Int?     @unique
-  booking    Booking? @relation(fields: [bookingId], references: [id])
+  id          Int      @id @default(autoincrement())
+  row_number  Int
+  seat_number Int
+  is_booked   Boolean  @default(false)
+  booked_by   Int?
+  coach_id    Int
+  coach       Coach    @relation(fields: [coach_id], references: [id])
+  Booking     Booking? @relation(fields: [bookingId], references: [id])
+  bookingId   Int?
 }
 
 model Booking {

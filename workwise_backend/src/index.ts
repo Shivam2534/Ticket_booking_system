@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { authRouter } from "./router/auth_route";
+import { bookingRouter } from "./router/booking";
 
 const app: Express = express();
 
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/seat", bookingRouter);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
