@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma"; // assuming this is correctly set up
-import { PrismaClientRustPanicError } from "@prisma/client/runtime/library";
+import { prisma } from "../lib/prisma";
 
 interface SeatType {
   id: number;
@@ -64,7 +63,7 @@ function findContiguousBlock(rowSeats: SeatType[], requiredCount: number) {
   return null;
 }
 
-const booking = async (req: Request, res: Response) => {
+const bookingNewTicket = async (req: Request, res: Response) => {
   console.log("Request reached in Booking controller");
 
   const { seatCount } = req.body;
@@ -174,4 +173,4 @@ const initialCoachMatrixHandler = async (req: Request, res: Response) => {
     });
   }
 };
-export { booking, initialCoachMatrixHandler };
+export { bookingNewTicket, initialCoachMatrixHandler };
