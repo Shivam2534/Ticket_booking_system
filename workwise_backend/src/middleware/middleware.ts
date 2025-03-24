@@ -5,7 +5,7 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
   console.log("request is at the middleware");
 
   const token = req.headers["authorization"]?.replace("Bearer ", "");
-
+  console.log("token-",token)
   if (!token || token.length === 0) {
     res.status(402).json({
       message: "Unothorised access",

@@ -1,6 +1,48 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma"; // assuming this is correctly set up
 
+const initialCoachMatrix = async (req: Request) => {
+  console.log("request reached into initialCoachMatrix controller");
+
+  try {
+    // Fetch all seats ordered by row_number and seat_number
+    const seats = await prisma.seat.findMany({
+      orderBy: [{ row_number: "asc" }, { seat_number: "asc" }],
+    });
+
+    // Build matrix: 2D array -> rows of seats
+    const matrix: any[][] = [];
+    let currentRow = 1;
+    let rowSeats: any[] = [];
+
+    for (const seat of seats) {
+      if (seat.row_number !== currentRow) {
+        matrix.push(rowSeats);
+        rowSeats = [];
+        currentRow = seat.row_number;
+      }
+      rowSeats.push(seat);
+    }
+
+    // Push the last row
+    if (rowSeats.length > 0) {
+      matrix.push(rowSeats);
+    }
+
+    return matrix;
+    // } else {
+    //   res.status(200).json({
+    //     success: true,
+    //     data: matrix,
+    //   });
+    //   return;
+    // }
+  } catch (error) {
+    console.error("Error fetching seat matrix:", error);
+    return error;
+  }
+};
+
 function findContiguousBlock(rowSeats: any, requiredCount: any) {
   let count = 0;
   let startIndex = 0;
@@ -21,8 +63,8 @@ function findContiguousBlock(rowSeats: any, requiredCount: any) {
 const booking = async (req: Request, res: Response) => {
   console.log("Request reached in Booking controller");
 
-  const { seatCount, userId } = req.body;
-  console.log("data-", seatCount, userId);
+  const { seatCount } = req.body;
+  console.log("data-", seatCount);
 
   if (seatCount < 1 || seatCount > 7) {
     res.status(400).json({ error: "You can book between 1 and 7 seats." });
@@ -79,15 +121,19 @@ const booking = async (req: Request, res: Response) => {
       // 4. Update selected seats as booked
       await tx.seat.updateMany({
         where: { id: { in: seatIds } },
-        data: { is_booked: true, booked_by: userId },
+        data: { is_booked: true, booked_by: 1 },
       });
 
       return allocatedSeats;
     });
 
+    // here we are fetching updated matrix
+    const updateMatrix = await initialCoachMatrix(req);
+
     res.status(200).json({
       message: "Seats booked successfully",
       seats: result,
+      updateMatrix,
     });
     return;
   } catch (error: any) {
@@ -101,4 +147,19 @@ const booking = async (req: Request, res: Response) => {
   }
 };
 
-export { booking };
+const initialCoachMatrixHandler = async (req: Request, res: Response) => {
+  try {
+    const matrix = await initialCoachMatrix(req);
+    res.status(200).json({
+      success: true,
+      data: matrix,
+    });
+  } catch (error) {
+    console.error("Error fetching seat matrix:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch coach matrix.",
+    });
+  }
+};
+export { booking, initialCoachMatrixHandler };

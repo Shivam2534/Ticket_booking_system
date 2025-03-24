@@ -1,9 +1,9 @@
-import Seats from "./components/Seats";
+import SeatInput from "./components/SeatInput";
 
 export default function Home() {
   return (
     <div>
-      <Seats />
+      <SeatInput />
     </div>
   );
 }
