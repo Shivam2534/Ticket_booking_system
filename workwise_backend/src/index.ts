@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { authRouter } from "./router/auth_route";
-import { bookingRouter } from "./router/booking";
+import { bookingRouter } from "./router/booking_route";
 
 const app: Express = express();
 
