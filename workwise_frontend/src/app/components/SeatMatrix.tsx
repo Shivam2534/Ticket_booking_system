@@ -19,7 +19,7 @@ interface SeatMatrixProps {
 }
 
 const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
-  const [seats, setSeats] = useState<SeatType[]>([]);
+  const [seats, setSeats] = useState<SeatType[] | []>([]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
 
   useEffect(() => {
@@ -80,26 +80,28 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
             >
               {/* Left Side Seats (3 seats) */}
               <div className="flex gap-2">
-                {rowSeats?.map((seat: SeatType) => {
-                  let seatColor = "";
-                  if (seat.is_booked) {
-                    seatColor = "bg-red-500";
-                  } else if (selectedSeats.includes(seat.id)) {
-                    seatColor = "bg-blue-500";
-                  } else {
-                    seatColor = "bg-green-500";
-                  }
+                {(seats[rowIdx] as unknown as SeatType[]).map(
+                  (seat: SeatType) => {
+                    let seatColor = "";
+                    if (seat.is_booked) {
+                      seatColor = "bg-red-500";
+                    } else if (selectedSeats.includes(seat.id)) {
+                      seatColor = "bg-blue-500";
+                    } else {
+                      seatColor = "bg-green-500";
+                    }
 
-                  return (
-                    <div
-                      key={seat.id}
-                      onClick={() => toggleSeat(seat)}
-                      className={`cursor-pointer text-center rounded-md w-10 h-10 flex items-center justify-center text-white font-bold ${seatColor}`}
-                    >
-                      {seat.seat_number}
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={seat.id}
+                        onClick={() => toggleSeat(seat)}
+                        className={`cursor-pointer text-center rounded-md w-10 h-10 flex items-center justify-center text-white font-bold ${seatColor}`}
+                      >
+                        {seat.seat_number}
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </div>
           ))}
