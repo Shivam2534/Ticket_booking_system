@@ -49,7 +49,7 @@ function SeatInput() {
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8 p-8">
+        <div className="flex flex-col md:flex-row gap-8 p-1 md:p-8">
           {/* Input Section */}
           <div className="w-full md:w-1/2 flex flex-col items-start gap-6 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
             <div className="w-full">
@@ -161,10 +161,10 @@ function SeatInput() {
           </div>
 
           {/* Seat Matrix Section */}
-          <div className="w-full md:w-1/2 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+          <div className="w-full md:w-1/2 md:bg-slate-800 p-0 md:p-6 rounded-xl border border-slate-700 shadow-lg">
             {/* Screen indicator */}
 
-            <div className="bg-slate-900 p-6 rounded-lg border border-slate-700">
+            <div className="bg-slate-900 p-2 md:p-6 rounded-lg border border-slate-700">
               <SeatMatrix updateMatrix={updateMatrix} />
             </div>
           </div>

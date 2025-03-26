@@ -66,7 +66,7 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="md:p-4 max-w-4sxl mx-auto">
       <div>
         <h2 className="text-2xl font-bold mb-4 text-center">
           Train Coach Seat Selection
@@ -96,7 +96,7 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
                       <div
                         key={seat.id}
                         onClick={() => toggleSeat(seat)}
-                        className={`cursor-pointer text-center rounded-md w-10 h-10 flex items-center justify-center text-white font-bold ${seatColor}`}
+                        className={`cursor-pointer text-center rounded-md w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-white font-bold ${seatColor}`}
                       >
                         {seat.seat_number}
                       </div>
