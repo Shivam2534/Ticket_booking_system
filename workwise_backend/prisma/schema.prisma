@@ -17,7 +17,7 @@ model User {
 }
 
 model Coach {
-  id    Int    @id @default(autoincrement())
+  id    Int    @id @default(1) //idealy we should do this but right now we have just one coach that-> @default(autoincrement())
   name  String
   seats Seat[] // relation to seats
 }

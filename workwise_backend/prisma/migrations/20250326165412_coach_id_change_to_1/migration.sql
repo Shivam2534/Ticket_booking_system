@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Coach" ALTER COLUMN "id" SET DEFAULT 1,
+ALTER COLUMN "id" DROP DEFAULT;
+DROP SEQUENCE "Coach_id_seq";
