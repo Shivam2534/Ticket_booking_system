@@ -9,6 +9,7 @@ function SeatInput() {
   const [seatCount, setSeatCount] = useState<number>(0);
   const [isloading, setisloading] = useState(false);
   const [updateMatrix, setupdateMatrix] = useState([]);
+  
   async function BookSeats() {
     try {
       setisloading(true);
@@ -25,7 +26,6 @@ function SeatInput() {
         }
       );
 
-      console.log("res-->", res.data);
       setupdateMatrix(res.data.updateMatrix);
       toast.success(res.data.message);
     } catch (error) {

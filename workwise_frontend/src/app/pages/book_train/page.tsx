@@ -12,7 +12,7 @@ function Page() {
   useEffect(() => {
     extractUserDataFromLocalStorage();
     setLoading(false);
-  }, []);
+  }, [extractUserDataFromLocalStorage]);
 
   useEffect(() => {
     if (!userData && !loading) {
@@ -21,7 +21,7 @@ function Page() {
   }, [userData, loading, router]);
 
   if (loading) {
-    return <p>Loading...</p>; // Show a loading state while checking user data
+    return <p>Loading...</p>;
   } else if (userData) {
     return (
       <div>

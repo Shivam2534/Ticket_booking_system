@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     extractUserDataFromLocalStorage();
-  }, []);
+  }, [extractUserDataFromLocalStorage]);
   const router = useRouter();
 
   function DeleteUserSession() {
@@ -82,7 +82,7 @@ export default function Home() {
               Journey Beyond <span className="text-blue-400">Boundaries</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Experience the world's most scenic routes with comfort and style
+              Experience the world is most scenic routes with comfort and style
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
