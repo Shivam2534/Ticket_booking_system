@@ -20,7 +20,7 @@ jobs:
 
       - name: 🚀 Deploy via SSH
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@{{ secrets.SSH_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.SSH_HOST }} << 'EOF'
           git pull origin main
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
