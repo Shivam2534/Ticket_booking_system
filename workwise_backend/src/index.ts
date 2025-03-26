@@ -11,7 +11,7 @@ app.use(express.json());
 dotenv.config();
 
 app.get("/", (req, res) => {
-  res.send("server is alive");
+  res.send("Server is live & we are testing our Cd pipelin making this changes.");
 });
 
 app.use("/api/v1/auth", authRouter);
