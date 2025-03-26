@@ -9,17 +9,16 @@ dotenv.config();
 
 const signup = async (req: Request, res: Response): Promise<Response> => {
   try {
-    console.log("➡️ Request reached at /api/v1/signup endpoint");
+    console.log("Request reached at /api/v1/signup endpoint");
 
-    // Validate incoming request body
     console.log("data from frontend-", req.body);
     const parsedData = createNewUserSchema.safeParse(req.body);
     if (!parsedData.success) {
-      console.warn("❌ Validation failed:", parsedData.error.format());
-      return res.status(400).json({
+      return res.status(200).json({
         message: "Invalid Inputs",
         success: false,
         errors: parsedData.error.format(),
+        status: 400,
       });
     }
 
@@ -36,6 +35,7 @@ const signup = async (req: Request, res: Response): Promise<Response> => {
       return res.status(200).json({
         message: "Email already in use. Please use a different email.",
         success: false,
+        status: 400,
       });
     }
 
@@ -53,7 +53,7 @@ const signup = async (req: Request, res: Response): Promise<Response> => {
 
     console.log("✅ New User Created:", newUser.email);
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "User registered successfully.",
       success: true,
       data: {
@@ -61,12 +61,14 @@ const signup = async (req: Request, res: Response): Promise<Response> => {
         name: newUser.name,
         email: newUser.email,
       },
+      status: 200,
     });
   } catch (error) {
     console.error("❌ Server error during signup:", error);
-    return res.status(500).json({
+    return res.status(200).json({
       message: "Internal Server Error. Please try again later.",
       success: false,
+      status: 500,
     });
   }
 };
@@ -78,9 +80,10 @@ const signin = async (req: Request, res: Response): Promise<Response> => {
     // Validate incoming data
     const parsedData = signinSchema.safeParse(req.body);
     if (!parsedData.success) {
-      return res.status(400).json({
+      return res.status(200).json({
         message: "Invalid email or password format.",
         success: false,
+        status: 400,
       });
     }
 
@@ -89,28 +92,30 @@ const signin = async (req: Request, res: Response): Promise<Response> => {
     // Check if user exists
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: "Account not found. Please create an account.",
         success: false,
+        status: 402,
       });
     }
 
     // Validate password
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return res.status(401).json({
+      return res.status(200).json({
         message: "Incorrect password.",
         success: false,
+        status: 400,
       });
     }
 
     // Generate JWT token
     const secret = process.env.JWT_SECRET || "thisissecreatebro";
-    console.log("secrete-->", secret);
     if (!secret) {
       return res.status(200).json({
         message: "secrete not found",
         success: false,
+        status: 500,
       });
     }
     const token = jwt.sign({ userId: user.id }, secret, { expiresIn: "7d" });
@@ -124,12 +129,14 @@ const signin = async (req: Request, res: Response): Promise<Response> => {
         name: user.name,
       },
       token,
+      status: 200,
     });
   } catch (error) {
     console.error("Signin error:", error);
-    return res.status(500).json({
+    return res.status(200).json({
       message: "Internal server error. Please try again later.",
       success: false,
+      status: 500,
     });
   }
 };

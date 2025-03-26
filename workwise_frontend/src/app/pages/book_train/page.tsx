@@ -1,20 +1,28 @@
 "use client";
 import SeatInput from "@/app/components/SeatInput";
 import { useUserDataExtract } from "@/app/hooks/useUserDataExtract";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 function Page() {
   const { userData, extractUserDataFromLocalStorage } = useUserDataExtract();
-  useEffect(() => {
-    extractUserDataFromLocalStorage();
-  }, []);
-
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  if (!userData) {
-    router.push("/Auth/Signin");
-  } else {
+  useEffect(() => {
+    extractUserDataFromLocalStorage();
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!userData && !loading) {
+      router.push("/Auth/Signin");
+    }
+  }, [userData, loading, router]);
+
+  if (loading) {
+    return <p>Loading...</p>; // Show a loading state while checking user data
+  } else if (userData) {
     return (
       <div>
         <SeatInput />

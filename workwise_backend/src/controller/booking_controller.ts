@@ -68,10 +68,13 @@ const bookingNewTicket = async (req: Request, res: Response) => {
   console.log("Request reached in Booking controller");
 
   const { seatCount } = req.body;
-  console.log("data-", seatCount);
 
   if (seatCount < 1 || seatCount > 7) {
-    res.status(400).json({ error: "You can book between 1 and 7 seats." });
+    res.status(200).json({
+      message: "You can book maximum 7 seats at a time.",
+      success: false,
+      status: 401,
+    });
     return;
   }
 
@@ -134,6 +137,7 @@ const bookingNewTicket = async (req: Request, res: Response) => {
       message: "Seats booked successfully",
       seats: result,
       updateMatrix,
+      status: 200,
     });
     return;
   } catch (error: unknown) {
@@ -141,16 +145,24 @@ const bookingNewTicket = async (req: Request, res: Response) => {
 
     if (error instanceof Error) {
       if (error.message.includes("Not enough seats")) {
-        res.status(400).json({ error: error.message });
+        res
+          .status(200)
+          .json({ message: "Not enough seats", success: false, status: 501 });
         return;
       }
 
-      res
-        .status(500)
-        .json({ error: "Internal Server Error", details: error.message });
+      res.status(200).json({
+        message: "Internal Server Error",
+        success: false,
+        status: 500,
+      });
     } else {
       // Non-standard error (not instance of Error)
-      res.status(500).json({ error: "Unknown error occurred" });
+      res.status(200).json({
+        message: "Unknown error occurred",
+        success: false,
+        status: 500,
+      });
     }
   }
 };
@@ -164,9 +176,11 @@ const bookDiscrateSeats = async (req: Request, res: Response) => {
     const { selectedSeats, coachId = 1 } = req.body;
 
     if (!Array.isArray(selectedSeats) || selectedSeats.length === 0) {
-      res
-        .status(400)
-        .json({ message: "Invalid seat selection", success: false });
+      res.status(200).json({
+        message: "Invalid seat selection",
+        success: false,
+        status: 402,
+      });
       return;
     }
 
@@ -179,7 +193,9 @@ const bookDiscrateSeats = async (req: Request, res: Response) => {
     });
 
     if (seats.length === 0) {
-      res.status(400).json({ message: "Seats not available", success: false });
+      res
+        .status(200)
+        .json({ message: "Seats not available", success: false, status: 502 });
       return;
     }
 
@@ -196,14 +212,15 @@ const bookDiscrateSeats = async (req: Request, res: Response) => {
       message: "Seats booked successfully",
       success: true,
       updateMatrix,
+      status: 200,
     });
     return;
   } catch (error: any) {
     console.error("Error while booking discrete seats:", error.message);
-    res.status(500).json({
-      message: "An error occurred",
+    res.status(200).json({
+      message: "An error occurred while booking.",
       success: false,
-      error: error.message,
+      status: 500,
     });
     return;
   }
@@ -215,12 +232,15 @@ const initialCoachMatrixHandler = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       data: matrix,
+      message: "Initial coach matrix fetched successfully",
+      status: 200,
     });
   } catch (error) {
     console.error("Error fetching seat matrix:", error);
-    res.status(500).json({
+    res.status(200).json({
       success: false,
       message: "Failed to fetch coach matrix.",
+      status: 500,
     });
   }
 };

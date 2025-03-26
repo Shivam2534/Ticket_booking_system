@@ -6,6 +6,7 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { HTTP_BACKEND_URL } from "@/app/constant";
+import { toast } from "react-toastify";
 
 export default function Signin() {
   const [formData, setFormData] = useState({
@@ -83,7 +84,6 @@ export default function Signin() {
 
     try {
       // Simulate API call
-      console.log("Form submitted:", formData);
       const res = await axios.post(
         `${HTTP_BACKEND_URL}/api/v1/auth/signup`,
         formData
@@ -97,6 +97,8 @@ export default function Signin() {
         setTimeout(() => {
           router.push("/Auth/Signin");
         }, 4000);
+
+        toast.success("Signup successfull !!");
       }
 
       // Reset form after successful submission

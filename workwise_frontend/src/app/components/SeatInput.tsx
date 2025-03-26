@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { SeatMatrix } from "./SeatMatrix";
 import { HTTP_BACKEND_URL } from "../constant";
+import { toast } from "react-toastify";
 
 function SeatInput() {
   const [seatCount, setSeatCount] = useState<number>(0);
@@ -18,17 +19,18 @@ function SeatInput() {
         },
         {
           headers: {
-            //hardcoding the token for now only.
             Authorization: localStorage.getItem("token"),
             RequestedFrom: "inputbox",
           },
         }
       );
 
+      console.log("res-->", res.data);
       setupdateMatrix(res.data.updateMatrix);
+      toast.success(res.data.message);
     } catch (error) {
       console.log("Something went wrong while booking!!", error);
-      alert("Booking failed.");
+      toast.warn("Something went wrong while booking !!");
     } finally {
       setisloading(false);
     }

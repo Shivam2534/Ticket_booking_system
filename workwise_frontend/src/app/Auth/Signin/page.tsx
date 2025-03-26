@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import { HTTP_BACKEND_URL } from "@/app/constant";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function Signin() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,9 @@ export default function Signin() {
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [msg, setmsg] = useState("");
+
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,12 +78,15 @@ export default function Signin() {
         `${HTTP_BACKEND_URL}/api/v1/auth/signin`,
         formData
       );
-      console.log("res->", res.data);
+      setSubmitSuccess(true);
+      setmsg(res.data.message);
+
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userData", JSON.stringify(res.data.data));
 
         router.push("/");
+        toast.success("login successfull👋");
       }
       // Reset form after successful submission
       setFormData({
@@ -110,6 +117,15 @@ export default function Signin() {
             </Link>
           </p>
         </div>
+        {submitSuccess && (
+          <div className="rounded-md bg-green-50 p-4 mb-4">
+            <div className="flex">
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800">{msg}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">

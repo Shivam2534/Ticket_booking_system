@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { HTTP_BACKEND_URL } from "../constant";
-import { headers } from "next/headers";
+import { toast } from "react-toastify";
 
 const MAX_SELECTION = 7;
 
@@ -66,11 +66,16 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
           },
         }
       );
-      setSeats(res.data.updateMatrix);
+
+      if (res.data.success) {
+        setSeats(res.data.updateMatrix);
+        toast.success("seats booked successfully 🥳");
+      }
       setSelectedSeats([]);
     } catch (err) {
       alert("Booking failed...");
       console.log("error is- ", err);
+      toast.warn("Something went wrong while booking");
     }
   };
 
