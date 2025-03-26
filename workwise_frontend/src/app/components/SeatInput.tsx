@@ -18,7 +18,9 @@ function SeatInput() {
         },
         {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            //hardcoding the token for now only.
+            Authorization:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTc0Mjk2NjIxNCwiZXhwIjoxNzQzNTcxMDE0fQ.h_iKemFiDfNMa2tFv3E9IbSofYFrV_5wuwASTZiFLFY",
             RequestedFrom: "inputbox",
           },
         }
