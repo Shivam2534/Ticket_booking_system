@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -b && nodemon ./dist/index.js"
+    "dev": "tsc -b && nodemon ./dist/index.js",
+    "build": "prisma generate && next build"
   },
   "keywords": [],
   "author": "",
