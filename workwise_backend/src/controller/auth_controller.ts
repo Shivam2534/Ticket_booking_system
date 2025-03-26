@@ -12,6 +12,7 @@ const signup = async (req: Request, res: Response): Promise<Response> => {
     console.log("➡️ Request reached at /api/v1/signup endpoint");
 
     // Validate incoming request body
+    console.log("data from frontend-", req.body);
     const parsedData = createNewUserSchema.safeParse(req.body);
     if (!parsedData.success) {
       console.warn("❌ Validation failed:", parsedData.error.format());
@@ -32,7 +33,7 @@ const signup = async (req: Request, res: Response): Promise<Response> => {
 
     if (existingUser) {
       console.warn("⚠️ Email already in use:", email);
-      return res.status(409).json({
+      return res.status(200).json({
         message: "Email already in use. Please use a different email.",
         success: false,
       });
