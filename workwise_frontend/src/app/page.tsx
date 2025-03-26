@@ -2,27 +2,21 @@
 import Image from "next/image";
 import { ArrowRightIcon, TrainIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-function extractUserDataFromLocalStorage() {
-  const userDataString = localStorage.getItem("userData");
-  const userData = userDataString ? JSON.parse(userDataString) : null; // Handle null case safely
-  console.log("userData->", userData);
-  return userData;
-}
+import { useUserDataExtract } from "./hooks/useUserDataExtract";
+import { useEffect } from "react";
 
 export default function Home() {
-  // extracting user data from local storage , if it is thee
-  const user = extractUserDataFromLocalStorage();
-  const [userData, setUserData] = useState(user);
+  const { userData, logoutUser, extractUserDataFromLocalStorage } =
+    useUserDataExtract();
+
+  useEffect(() => {
+    extractUserDataFromLocalStorage();
+  }, []);
   const router = useRouter();
 
   function DeleteUserSession() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userData");
-    const UserDeleted = extractUserDataFromLocalStorage();
-    setUserData(UserDeleted);
+    logoutUser();
   }
 
   return (
@@ -34,21 +28,6 @@ export default function Home() {
             <TrainIcon className="h-8 w-8 text-white" />
             <span className="text-2xl font-bold text-white">RailJourney</span>
           </div>
-
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-gray-300 hover:text-white font-medium">
-              Home
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white font-medium">
-              Schedules
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white font-medium">
-              Destinations
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white font-medium">
-              Offers
-            </a>
-          </nav>
 
           {!userData && (
             <div className="flex items-center space-x-4">
@@ -66,7 +45,11 @@ export default function Home() {
           )}
 
           {userData && (
-            <div>
+            <div className="flex gap-10">
+              <div className="flex items-end text-lg font-semibold text-white">
+                Welcome, {userData?.name}
+              </div>
+
               <button
                 onClick={DeleteUserSession}
                 className="px-4 py-2 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-200 transition-colors"

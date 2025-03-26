@@ -25,7 +25,6 @@ function SeatInput() {
         }
       );
 
-      console.log("res-", res.data);
       setupdateMatrix(res.data.updateMatrix);
     } catch (error) {
       console.log("Something went wrong while booking!!", error);
@@ -34,7 +33,7 @@ function SeatInput() {
       setisloading(false);
     }
   }
-  console.log("updateMatrix from seat input box-", updateMatrix);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-800 to-slate-900 py-12 px-4">
       <div className="max-w-6xl mx-auto bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">

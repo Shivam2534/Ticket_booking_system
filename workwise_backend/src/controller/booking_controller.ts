@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
-import type { Prisma } from "@prisma/client"; 
+import type { Prisma } from "@prisma/client";
 
 interface SeatType {
   id: number;
@@ -155,6 +155,60 @@ const bookingNewTicket = async (req: Request, res: Response) => {
   }
 };
 
+const bookDiscrateSeats = async (req: Request, res: Response) => {
+  try {
+    console.log(
+      "Request reached in booking controller for discrete seat booking"
+    );
+
+    const { selectedSeats, coachId = 1 } = req.body;
+
+    if (!Array.isArray(selectedSeats) || selectedSeats.length === 0) {
+      res
+        .status(400)
+        .json({ message: "Invalid seat selection", success: false });
+      return;
+    }
+
+    const seats = await prisma.seat.findMany({
+      where: {
+        seat_number: { in: selectedSeats },
+        coach_id: coachId,
+      },
+      orderBy: [{ row_number: "asc" }, { seat_number: "asc" }],
+    });
+
+    if (seats.length === 0) {
+      res.status(400).json({ message: "Seats not available", success: false });
+      return;
+    }
+
+    const seatIds = seats.map((seat) => seat.id);
+
+    await prisma.seat.updateMany({
+      where: { id: { in: seatIds } },
+      data: { is_booked: true, booked_by: 1 },
+    });
+
+    const updateMatrix = await initialCoachMatrix(req);
+
+    res.status(200).json({
+      message: "Seats booked successfully",
+      success: true,
+      updateMatrix,
+    });
+    return;
+  } catch (error: any) {
+    console.error("Error while booking discrete seats:", error.message);
+    res.status(500).json({
+      message: "An error occurred",
+      success: false,
+      error: error.message,
+    });
+    return;
+  }
+};
+
 const initialCoachMatrixHandler = async (req: Request, res: Response) => {
   try {
     const matrix = await initialCoachMatrix(req);
@@ -170,4 +224,4 @@ const initialCoachMatrixHandler = async (req: Request, res: Response) => {
     });
   }
 };
-export { bookingNewTicket, initialCoachMatrixHandler };
+export { bookingNewTicket, initialCoachMatrixHandler, bookDiscrateSeats };

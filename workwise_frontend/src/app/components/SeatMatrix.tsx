@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { HTTP_BACKEND_URL } from "../constant";
+import { headers } from "next/headers";
 
 const MAX_SELECTION = 7;
 
@@ -43,24 +44,32 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
   const toggleSeat = (seat: SeatType) => {
     if (seat.is_booked) return;
 
-    if (selectedSeats.includes(seat.id)) {
-      setSelectedSeats(selectedSeats.filter((id) => id !== seat.id));
+    if (selectedSeats.includes(seat.seat_number)) {
+      setSelectedSeats(
+        selectedSeats.filter((seat_number) => seat_number !== seat.seat_number)
+      );
     } else if (selectedSeats.length < MAX_SELECTION) {
-      setSelectedSeats([...selectedSeats, seat.id]);
+      setSelectedSeats([...selectedSeats, seat.seat_number]);
     }
   };
 
   const handleBooking = async () => {
     try {
-      await axios.post("/api/booking", {
-        seatIds: selectedSeats,
-        userId: "USER_ID_HERE",
-      });
-      alert("Booking successful!");
+      const res = await axios.post(
+        `${HTTP_BACKEND_URL}/api/v1/seat/bookdiscreateseat`,
+        {
+          selectedSeats: selectedSeats,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setSeats(res.data.updateMatrix);
       setSelectedSeats([]);
-      // Refetch seats if needed
     } catch (err) {
-      alert("Booking failed.");
+      alert("Booking failed...");
       console.log("error is- ", err);
     }
   };
@@ -86,7 +95,7 @@ const SeatMatrix = ({ updateMatrix }: SeatMatrixProps) => {
                     let seatColor = "";
                     if (seat.is_booked) {
                       seatColor = "bg-red-500";
-                    } else if (selectedSeats.includes(seat.id)) {
+                    } else if (selectedSeats.includes(seat.seat_number)) {
                       seatColor = "bg-blue-500";
                     } else {
                       seatColor = "bg-green-500";
