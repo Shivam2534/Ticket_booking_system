@@ -18,12 +18,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 📂 Deploy via SSH
+      - name: 🚀 Deploy via SSH
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.SSH_HOST }} << 'EOF'
-            cd ~/Ticket_booking_system/workwise_backend  
-            git pull origin main 
-            npm install 
-            npm run build 
-            pm2 restart workwise_server  
+          ssh -i ~/.ssh/id_rsa ubuntu@your-server-ip << 'EOF'
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
+       
+          cd ~/Ticket_booking_system/workwise_backend
+          npm install
+          pm2 restart workwise_server
           EOF
