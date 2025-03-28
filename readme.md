@@ -14,7 +14,8 @@ This repository contains a full-stack Ticket Booking System project with both a 
 - **Responsive Frontend:** Built with React/Next.js.
 - **CI/CD:** Automated deployment via GitHub Actions with SSH to your production server.
 
-## Api's 
+## Api's
+
 - https://documenter.getpostman.com/view/25650008/2sB2cPi4g7
 
 ## Prerequisites
@@ -36,13 +37,15 @@ This repository contains a full-stack Ticket Booking System project with both a 
    cd Ticket_booking_system/workwise_backend
    npm install
    npx prisma generate
-   npx prisma migrate dev 
+   npx prisma migrate dev
    npx prisma db seed
    npm run dev
    ```
 
 ### Frontend Setup
-   cd ../workwise_frontend
-   npm install
-   npm run dev
 
+```bash
+cd ../workwise_frontend
+npm install
+npm run dev
+```
