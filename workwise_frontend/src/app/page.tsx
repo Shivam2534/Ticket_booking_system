@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserDataExtract } from "./hooks/useUserDataExtract";
 import { useEffect } from "react";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 export default function Home() {
   const { userData, logoutUser, extractUserDataFromLocalStorage } =
     useUserDataExtract();
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     extractUserDataFromLocalStorage();
@@ -46,10 +49,11 @@ export default function Home() {
 
           {userData && (
             <div className="flex gap-10">
-              <div className="flex items-end text-lg font-semibold text-white">
-                Welcome, {userData?.name}
-              </div>
-
+              {!isMobile && (
+                <div className="flex items-end text-lg font-semibold text-white">
+                  Welcome, {userData?.name}
+                </div>
+              )}
               <button
                 onClick={DeleteUserSession}
                 className="px-4 py-2 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-200 transition-colors"
