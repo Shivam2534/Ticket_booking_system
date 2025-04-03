@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { HTTP_BACKEND_URL } from "@/app/constant";
 import { toast } from "react-toastify";
+import { createNewUserSchema } from "@/app/types";
 
 export default function Signin() {
   const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ export default function Signin() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [msg, setmsg] = useState("");
+  const [msg, setmsg] = useState<React.ReactNode>(null);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,46 +41,22 @@ export default function Signin() {
     }
   };
 
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { ...errors };
-
-    // Username validation
-    if (!formData.name.trim()) {
-      newErrors.name = "name is required";
-      valid = false;
-    } else if (formData.name.length < 3) {
-      newErrors.name = "name must be at least 3 characters";
-      valid = false;
-    }
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-      valid = false;
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-      valid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    const parsedData = createNewUserSchema.safeParse(formData);
 
+    // checks
+    if (!parsedData.success) {
+      setmsg(
+        parsedData?.error?.issues?.map((msg, index) => (
+          <div key={index}>{msg.message}</div>
+        )) || "An unknown error occurred."
+      );
+
+      setSubmitSuccess(true);
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -96,7 +73,7 @@ export default function Signin() {
       if (res.data.success) {
         setTimeout(() => {
           router.push("/Auth/Signin");
-        }, 4000);
+        }, 3000);
 
         toast.success("Signup successfull !!");
       }
@@ -136,7 +113,9 @@ export default function Signin() {
           <div className="rounded-md bg-green-50 p-4 mb-4">
             <div className="flex">
               <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">{msg}</p>
+                <p className=" text-xs md:text-sm font-medium text-green-800">
+                  {msg}
+                </p>
               </div>
             </div>
           </div>

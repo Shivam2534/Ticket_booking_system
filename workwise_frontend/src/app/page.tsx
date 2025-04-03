@@ -96,7 +96,7 @@ export default function Home() {
               >
                 Book Your Journey
               </button>
-              <button className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white/10 transition-colors text-lg">
+              <button className=" cursor-not-allowed px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white/10 transition-colors text-lg">
                 Explore Routes
               </button>
             </div>

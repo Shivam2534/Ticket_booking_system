@@ -13,9 +13,10 @@ const signup = async (req: Request, res: Response): Promise<Response> => {
 
     console.log("data from frontend-", req.body);
     const parsedData = createNewUserSchema.safeParse(req.body);
+    console.log("parsedData-->", parsedData);
     if (!parsedData.success) {
       return res.status(200).json({
-        message: "Invalid Inputs",
+        message: parsedData.error.issues[0].message,
         success: false,
         errors: parsedData.error.format(),
         status: 400,

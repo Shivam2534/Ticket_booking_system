@@ -6,6 +6,7 @@ import axios from "axios";
 import { HTTP_BACKEND_URL } from "@/app/constant";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { signinSchema } from "@/app/types";
 
 export default function Signin() {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ export default function Signin() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [msg, setmsg] = useState("");
+  const [msg, setmsg] = useState<React.ReactNode>(null);
 
   const router = useRouter();
 
@@ -38,36 +39,22 @@ export default function Signin() {
     }
   };
 
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { ...errors };
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-      valid = false;
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-      valid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    const parsedData = signinSchema.safeParse(formData);
+
+    // checks
+    if (!parsedData.success) {
+      setmsg(
+        parsedData?.error?.issues?.map((msg, index) => (
+          <div key={index}>{msg.message}</div>
+        )) || "An unknown error occurred."
+      );
+
+      setSubmitSuccess(true);
+      return;
+    }
 
     setIsSubmitting(true);
 
