@@ -113,9 +113,9 @@ export default function Signin() {
           <div className="rounded-md bg-green-50 p-4 mb-4">
             <div className="flex">
               <div className="ml-3">
-                <p className=" text-xs md:text-sm font-medium text-green-800">
+                <div className=" text-xs md:text-sm font-medium text-green-800">
                   {msg}
-                </p>
+                </div>
               </div>
             </div>
           </div>
